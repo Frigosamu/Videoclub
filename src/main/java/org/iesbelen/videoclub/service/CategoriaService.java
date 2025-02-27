@@ -2,14 +2,21 @@ package org.iesbelen.videoclub.service;
 
 import org.iesbelen.videoclub.domain.Categoria;
 import org.iesbelen.videoclub.exception.CategoriaNotFoundException;
+import org.iesbelen.videoclub.repository.CategoriaCustomRepository;
 import org.iesbelen.videoclub.repository.CategoriaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaService {
+    @Autowired
     private final CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private CategoriaCustomRepository categoriaCustomRepository;
 
     public CategoriaService(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
@@ -38,5 +45,9 @@ public class CategoriaService {
         this.categoriaRepository.findById(id).map(c -> {this.categoriaRepository.delete(c);
                                                         return c;})
                 .orElseThrow(() -> new CategoriaNotFoundException(id));
+    }
+
+    public List<Categoria> allByQueryFiltersStream(Optional<String> buscar, Optional<String> ordenar) {
+        return categoriaCustomRepository.queryCustomCategoria(buscar, ordenar);
     }
 }

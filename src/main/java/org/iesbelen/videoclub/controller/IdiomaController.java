@@ -1,9 +1,11 @@
 package org.iesbelen.videoclub.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.iesbelen.videoclub.domain.Idioma;
 import org.iesbelen.videoclub.service.IdiomaService;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class IdiomaController {
     }
 
     @PostMapping({"","/"})
-    public Idioma newIdioma(@RequestBody Idioma idioma) {
+    public Idioma newIdioma(@Valid @RequestBody Idioma idioma, BindingResult result) {
         return this.idiomaService.save(idioma);
     }
 
