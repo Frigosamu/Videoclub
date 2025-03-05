@@ -10,14 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="Socio")
+@Table(name = "Socio")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Socio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_socio")
+    @Column(name = "id_socio")
     private Long idSocio;
 
     @NaturalId
@@ -28,7 +28,7 @@ public class Socio {
     private String apellidos;
 
     @OneToOne
-    @JoinColumn(name = "tarjeta_id", referencedColumnName = "id")
+    @JoinColumn(name = "id_tarjeta")
     private Tarjeta tarjeta;
 
     @ElementCollection
@@ -37,7 +37,7 @@ public class Socio {
             @AttributeOverride(name = "houseNumber", column = @Column(name = "house_number")),
             @AttributeOverride(name = "street", column = @Column(name = "street")),
             @AttributeOverride(name = "city", column = @Column(name = "city")),
-            @AttributeOverride(name = "zipCode", column = @Column(name = "zip_code")),
+            @AttributeOverride(name = "zipCode", column = @Column(name = "zip_code"))
     })
     private Set<Address> addresses = new HashSet<>();
 
@@ -46,7 +46,7 @@ public class Socio {
 
     @ElementCollection
     @CollectionTable(name = "socio_phone_numbers", joinColumns = @JoinColumn(name = "id_socio"))
-    @Column(name = "phone_numbers")
-    private Set<String> phoneNumber;
-
+    @Column(name = "phone_number")
+    private Set<Integer> phoneNumber = new HashSet<>();
 }
+
