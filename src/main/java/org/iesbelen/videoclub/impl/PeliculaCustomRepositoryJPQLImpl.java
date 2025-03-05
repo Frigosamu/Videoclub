@@ -7,6 +7,7 @@ import org.iesbelen.videoclub.repository.PeliculaCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,19 +18,25 @@ public class PeliculaCustomRepositoryJPQLImpl implements PeliculaCustomRepositor
     private EntityManager em;
 
     @Override
-    public List<Pelicula> queryCustomPelicula(Optional<String> ordenarOptional) {
+    public List<Pelicula> pelisOrderbyCols(Optional<String[]> orden) {
         StringBuilder queryBuilder = new StringBuilder("SELECT p FROM Pelicula p");
 
-        if (ordenarOptional.isPresent()) {
-            if ("asc".equalsIgnoreCase(ordenarOptional.get())) {
-                queryBuilder.append(" ").append("ORDER BY p.titulo ASC");
-            } else if ("desc".equalsIgnoreCase(ordenarOptional.get())) {
-                queryBuilder.append(" ").append("ORDER BY p.titulo DESC");
+        if (orden.isPresent()) {
+            String[] ordenes = orden.get();
+            List<String> criteriosOrden = new ArrayList<>();
+
+            for (String ordenStr : ordenes) {
+                String[] partes = ordenStr.split(",");
+                String columna = partes[0].trim();
+                String direccion = partes[1].trim().equalsIgnoreCase("desc") ? "DESC" : "ASC";
+                criteriosOrden.add("p." + columna + " " + direccion);
+            }
+
+            if (!criteriosOrden.isEmpty()) {
+                queryBuilder.append(" ORDER BY ").append(String.join(", ", criteriosOrden));
             }
         }
-
-        Query query = em.createQuery(queryBuilder.toString());
-        return query.getResultList();
+        return em.createQuery(queryBuilder.toString(), Pelicula.class).getResultList();
     }
 
     @Override

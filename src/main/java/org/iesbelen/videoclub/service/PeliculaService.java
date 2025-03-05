@@ -92,55 +92,37 @@ public class PeliculaService {
         return response;
     }
 
-    public List<Pelicula> obtenerPeliculaConOrdenYPaginado(String[] orden) {
-
-        // De esta forma, puedo ordenar las peliculas en postman con un solo parámetro orden: columna,sentido (localhost:8080/peliculas?orden=titulo,desc)
-        /*
-        Sort sort = Sort.unsorted();
-
-        if (orden != null && !orden.isEmpty()) {
-            // Aquí divido orden en columna y sentido
-            String[] parts = orden.split(",");
-            if (parts.length == 2) {
-                String columna = parts[0];
-                String sentido = parts[1];
-                Sort.Order order = (sentido.equalsIgnoreCase("desc"))
-                        ? Sort.Order.desc(columna)
-                        : Sort.Order.asc(columna);
-                sort = Sort.by(order);
-            }
+    public List<Pelicula> findAllOrderByCol(String[] orden) {
+        Sort sort = null;
+        if (orden.length == 2) {
+            String columna = orden[0], sentido = orden[1];
+            sort = ("asc".equalsIgnoreCase(sentido)) ? Sort.by(columna).ascending() : Sort.by(columna).descending() ;
         }
-
-        return peliculaRepository.findAll(sort);
-        */
-
-        // De esta forma, ordeno las peliculas en postman con varios parámetros orden: columna,sentido (localhost:8080/peliculas?orden=titulo,desc&orden=duracion,asc)
-        List<Sort.Order> ordenes = new ArrayList<>();
-
-        // Si no se pasa ningún parámetro 'orden', no se aplica ningún orden
-        if (orden != null) {
-            for (String criterio : orden) {
-
-                // Divide el parámetro 'orden' en columna y dirección
-                String[] partes = criterio.split(",");
-                if (partes.length == 2) {
-                    String columna = partes[0];
-                    String sentido = partes[1];
-
-                    // Determinar si el orden es ascendente o descendente
-                    Sort.Order order = (sentido.equalsIgnoreCase("desc"))
-                            ? Sort.Order.desc(columna)
-                            : Sort.Order.asc(columna);
-
-                    ordenes.add(order);
-                }
-            }
+        if (orden.length == 1) {
+            String columna = orden[0];
+            sort = Sort.by(columna).ascending();
         }
-        // Si hay criterios de orden se crea un objeto Sort
-        Sort sort = ordenes.isEmpty() ? Sort.unsorted() : Sort.by(ordenes);
-
         return peliculaRepository.findAll(sort);
+    }
 
+    // Para ordenar por dos columnas
+    public List<Pelicula> findAllOrderByCols(String[] orden) {
+        return this.peliculaCustomRepository.pelisOrderbyCols(Optional.of(orden));
+    }
+
+    public Map<String, Object> all(String[] paginacion) {
+        Pageable paginado = PageRequest.of(Integer.parseInt(paginacion[0]),Integer.parseInt(paginacion[1]), Sort.by("idPelicula").ascending());
+
+        Page<Pelicula> pageAll = this.peliculaRepository.findAll(paginado);
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("peliculas", pageAll.getContent());
+        response.put("currentPage", pageAll.getNumber());
+        response.put("totalItems", pageAll.getTotalElements());
+        response.put("totalPages", pageAll.getTotalPages());
+
+        return response;
     }
 
 }

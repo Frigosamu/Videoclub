@@ -27,7 +27,7 @@ public class Idioma {
 
     private String nombre;
     
-    @OneToMany(mappedBy = "idioma")
+    @OneToMany(mappedBy = "idioma", fetch = FetchType.LAZY)
     @JsonIgnore
     @ToString.Exclude
     private List<Pelicula> peliculasIdioma;
