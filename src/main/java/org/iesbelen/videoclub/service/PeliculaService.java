@@ -92,4 +92,55 @@ public class PeliculaService {
         return response;
     }
 
+    public List<Pelicula> obtenerPeliculaConOrdenYPaginado(String[] orden) {
+
+        // De esta forma, puedo ordenar las peliculas en postman con un solo parámetro orden: columna,sentido (localhost:8080/peliculas?orden=titulo,desc)
+        /*
+        Sort sort = Sort.unsorted();
+
+        if (orden != null && !orden.isEmpty()) {
+            // Aquí divido orden en columna y sentido
+            String[] parts = orden.split(",");
+            if (parts.length == 2) {
+                String columna = parts[0];
+                String sentido = parts[1];
+                Sort.Order order = (sentido.equalsIgnoreCase("desc"))
+                        ? Sort.Order.desc(columna)
+                        : Sort.Order.asc(columna);
+                sort = Sort.by(order);
+            }
+        }
+
+        return peliculaRepository.findAll(sort);
+        */
+
+        // De esta forma, ordeno las peliculas en postman con varios parámetros orden: columna,sentido (localhost:8080/peliculas?orden=titulo,desc&orden=duracion,asc)
+        List<Sort.Order> ordenes = new ArrayList<>();
+
+        // Si no se pasa ningún parámetro 'orden', no se aplica ningún orden
+        if (orden != null) {
+            for (String criterio : orden) {
+
+                // Divide el parámetro 'orden' en columna y dirección
+                String[] partes = criterio.split(",");
+                if (partes.length == 2) {
+                    String columna = partes[0];
+                    String sentido = partes[1];
+
+                    // Determinar si el orden es ascendente o descendente
+                    Sort.Order order = (sentido.equalsIgnoreCase("desc"))
+                            ? Sort.Order.desc(columna)
+                            : Sort.Order.asc(columna);
+
+                    ordenes.add(order);
+                }
+            }
+        }
+        // Si hay criterios de orden se crea un objeto Sort
+        Sort sort = ordenes.isEmpty() ? Sort.unsorted() : Sort.by(ordenes);
+
+        return peliculaRepository.findAll(sort);
+
+    }
+
 }

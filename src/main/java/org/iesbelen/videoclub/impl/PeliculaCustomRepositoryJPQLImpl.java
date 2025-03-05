@@ -16,6 +16,21 @@ public class PeliculaCustomRepositoryJPQLImpl implements PeliculaCustomRepositor
     @Autowired
     private EntityManager em;
 
+    @Override
+    public List<Pelicula> queryCustomPelicula(Optional<String> ordenarOptional) {
+        StringBuilder queryBuilder = new StringBuilder("SELECT p FROM Pelicula p");
+
+        if (ordenarOptional.isPresent()) {
+            if ("asc".equalsIgnoreCase(ordenarOptional.get())) {
+                queryBuilder.append(" ").append("ORDER BY p.titulo ASC");
+            } else if ("desc".equalsIgnoreCase(ordenarOptional.get())) {
+                queryBuilder.append(" ").append("ORDER BY p.titulo DESC");
+            }
+        }
+
+        Query query = em.createQuery(queryBuilder.toString());
+        return query.getResultList();
+    }
 
     @Override
     public List<Pelicula> queryCustomPelicula(Optional<String> buscarOptional, Optional<String> ordenarOptional) {

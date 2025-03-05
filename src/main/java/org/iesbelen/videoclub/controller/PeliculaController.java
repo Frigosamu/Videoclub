@@ -1,19 +1,21 @@
 package org.iesbelen.videoclub.controller;
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.iesbelen.videoclub.domain.Pelicula;
+import org.iesbelen.videoclub.repository.PeliculaRepository;
 import org.iesbelen.videoclub.service.CategoriaService;
 import org.iesbelen.videoclub.service.PeliculaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -24,6 +26,9 @@ public class PeliculaController {
 
     @Autowired
     private CategoriaService categoriaService;
+
+    @Autowired
+    private PeliculaRepository peliculaRepository;
 
     public PeliculaController(PeliculaService peliculaService) {
         this.peliculaService = peliculaService;
@@ -68,7 +73,6 @@ public class PeliculaController {
         return this.peliculaService.findAllByOrderByTituloAsc();
     }
 
-    //batman thing
     @GetMapping(value = {"","/"}, params = {"!pagina", "!tamanio"})
     public List<Pelicula> all(@RequestParam("buscar") Optional<String> buscarOptional, @RequestParam("ordenar") Optional<String> ordenarOptional) {
         log.info("Accediendo a todas las películas con filtro buscar: %s y ordenadr: %s",
@@ -86,5 +90,14 @@ public class PeliculaController {
         Map<String, Object> responseAll = this.peliculaService.all(pagina, tamanio);
 
         return ResponseEntity.ok(responseAll);
+    }
+
+    @GetMapping(value = {"", "/"}, params = {"orden"})
+    public ResponseEntity<List<Pelicula>> obtenerPeliculas(
+            @RequestParam(required = false) String[] orden) {
+
+        // Si no se pasa ningún parámetro 'orden', el valor será null
+        List<Pelicula> peliculas = peliculaService.obtenerPeliculaConOrdenYPaginado(orden);
+        return ResponseEntity.ok(peliculas);
     }
 }

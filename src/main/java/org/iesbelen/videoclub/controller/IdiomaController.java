@@ -3,6 +3,7 @@ package org.iesbelen.videoclub.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.iesbelen.videoclub.domain.Idioma;
+import org.iesbelen.videoclub.dto.IdiomaDTO;
 import org.iesbelen.videoclub.service.IdiomaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -47,5 +48,11 @@ public class IdiomaController {
     @DeleteMapping("/{id}")
     public Idioma deleteIdioma(@PathVariable("id") Long id) {
         return this.idiomaService.delete(id);
+    }
+
+    // IDIOMA DTO PARA QUE APAREZCAN EL NOMBRE DE LAS PELICULAS QUE HAY EN ESE IDIOMA
+    @GetMapping("/con-peliculas")
+    public List<IdiomaDTO> getAllIdiomasConPeliculas() {
+        return idiomaService.getAllIdiomasConPeliculas();
     }
 }
